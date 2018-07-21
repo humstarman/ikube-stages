@@ -43,7 +43,7 @@ ${BOOTSTRAP_TOKEN},kubelet-bootstrap,10001,"system:kubelet-bootstrap"
 EOF
 ansible ${ANSIBLE_GROUP} -m copy -a "src=/tmp/token.csv dest=/etc/kubernetes"
 # ip
-VIP==${VIP:-"none"}
+VIP=${VIP:-"none"}
 ansible master -m script -a "./put-master-ip.sh -n $NET_ID -v $VIP"
 if $NODE_EXISTENCE; then
   ansible node -m script -a "./put-node-ip.sh -n $NET_ID -v $VIP"
