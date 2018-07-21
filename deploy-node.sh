@@ -181,9 +181,10 @@ if [[ "calico" == "${CNI}" ]]; then
   --cni-bin-dir=/opt/cni/bin \
 EOF
 fi
+#  --pod-infra-container-image=registry.access.redhat.com/rhel7/pod-infrastructure:latest \
 cat >> $FILE <<"EOF"
   --fail-swap-on=false \
-  --pod-infra-container-image=registry.access.redhat.com/rhel7/pod-infrastructure:latest \
+  --pod-infra-container-image=lowyard/pause:latest \
   --cgroup-driver=cgroupfs \
   --address=${NODE_IP} \
   --hostname-override=${NODE_IP} \
