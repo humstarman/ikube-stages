@@ -15,13 +15,13 @@ source info.env
 BASE_PATH=calico
 mkdir -p ${BASE_PATH}  
 cd ${BASE_PATH} && \
-  curl -s -O ${MANIFEST}/${BASE_PATH}/Makefile.sed && \
+  curl -s -O ${MANIFESTS}/${BASE_PATH}/Makefile.sed && \
   cd -
-MANIFEST_PATH=calico/manifest
-mkdir -p ${MANIFEST_PATH}
-cd ${MANIFEST_PATH} && \
-  curl -s -O ${MANIFEST}/${MANIFEST_PATH}/calico.yaml.sed && \
-  curl -s -O ${MANIFEST}/${MANIFEST_PATH}/rbac.yaml.sed && \
+MANIFESTS_PATH=calico/manifest
+mkdir -p ${MANIFESTS_PATH}
+cd ${MANIFESTS_PATH} && \
+  curl -s -O ${MANIFESTS}/${MANIFESTS_PATH}/calico.yaml.sed && \
+  curl -s -O ${MANIFESTS}/${MANIFESTS_PATH}/rbac.yaml.sed && \
   cd -
 # 2 sed
 cd ${BASE_PATH} && \
