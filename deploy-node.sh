@@ -180,6 +180,7 @@ if [[ "calico" == "${CNI}" ]]; then
   --cni-conf-dir=/etc/cni/net.d \
   --cni-bin-dir=/opt/cni/bin \
 EOF
+fi
 cat >> $FILE <<"EOF"
   --fail-swap-on=false \
   --pod-infra-container-image=registry.access.redhat.com/rhel7/pod-infrastructure:latest \
