@@ -11,6 +11,15 @@ source ./version
     done
   fi
 };:
+FILE=info.env
+if [ -f ./$FILE ]; then
+  source ./$FILE
+else
+  echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [ERROR] - no environment file found!"
+  echo " - exit!"
+  sleep 3
+  exit 1
+fi
 # 1 download and install flannel 
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - download flannel ... "
 # flannel-v3.3.2-linux-amd64.tar.gz
