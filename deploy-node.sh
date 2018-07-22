@@ -313,7 +313,6 @@ EOF
 if [[ "iptables" == "${PROXY}" ]]; then
   cat >> $FILE <<"EOF"
   --proxy-mode=iptables \
-  --masquerade-all \
 EOF
 fi
 if [[ "ipvs" == "${PROXY}" ]]; then
@@ -325,6 +324,7 @@ if [[ "ipvs" == "${PROXY}" ]]; then
 EOF
 fi
 cat >> $FILE <<"EOF"
+  --masquerade-all \
   --v=2
 Restart=on-failure
 RestartSec=5
