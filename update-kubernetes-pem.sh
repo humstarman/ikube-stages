@@ -11,7 +11,6 @@ set -e
     done
   fi
 };:
-# 0 set env
 FILE=info.env
 source ./${FILE}
 # 1 update kubernetes pem
