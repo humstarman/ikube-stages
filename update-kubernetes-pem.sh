@@ -23,7 +23,7 @@ cat > $FILE << EOF
   "hosts": [
     "127.0.0.1",
 EOF
-if [[ "VIP" == "${HA}" ]]; then
+if [[ "vip" == "${HA}" ]]; then
   cat >> $FILE << EOF
     "$VIP",
 EOF

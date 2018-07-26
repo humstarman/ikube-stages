@@ -23,7 +23,7 @@ cat > $FILE << EOF
   "hosts": [
     "127.0.0.1",
 EOF
-if [[ "VIP" == "${HA}" ]]; then
+if [[ "vip" == "${HA}" ]]; then
   cat >> $FILE << EOF
     "$VIP",
 EOF
@@ -171,7 +171,7 @@ ansible master -m shell -a "systemctl daemon-reload"
 ansible master -m shell -a "systemctl enable $FILE"
 ansible master -m shell -a "systemctl restart $FILE"
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - $FILE deployed."
-# 6 deploy kube-scheduler-
+# 6 deploy kube-scheduler
 mkdir -p ./systemd-unit
 FILE=./systemd-unit/kube-scheduler.service
 cat > $FILE <<"EOF"
