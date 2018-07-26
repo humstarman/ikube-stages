@@ -11,6 +11,8 @@ set -e
     done
   fi
 };:
+FILE=info.env
+source ./${FILE}
 # 1 generate kubernetes pem
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - generate kubernetes pem ... "
 mkdir -p ./ssl/kubernetes
@@ -20,6 +22,9 @@ cat > $FILE << EOF
   "CN": "kubernetes",
   "hosts": [
     "127.0.0.1",
+EOF
+if [[ "VIP" == "${HA}" ]]; then
+  cat >> $FILE << EOF
     "$VIP",
 EOF
 MASTER=$(cat ./master.csv | tr "," " ")

@@ -23,6 +23,10 @@ cat > $FILE << EOF
   "hosts": [
     "127.0.0.1",
 EOF
+if [[ "VIP" == "${HA}" ]]; then
+  cat >> $FILE << EOF
+    "$VIP",
+EOF
 MASTER=$(sed s/","/" "/g ./master.csv)
 #echo $MASTER
 for ip in $MASTER; do
