@@ -27,6 +27,7 @@ if [[ "vip" == "${HA}" ]]; then
   cat >> $FILE << EOF
     "$VIP",
 EOF
+fi
 MASTER=$(cat ./master.csv | tr "," " ")
 #echo $MASTER
 for ip in $MASTER; do
