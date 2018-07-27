@@ -73,6 +73,7 @@ mkdir -p ${SCRIPTS_PATH}
 cd ${SCRIPTS_PATH} && \
   curl -s -O ${MANIFESTS}/${SCRIPTS_PATH}/mk-ansible-hosts.sh && \
   curl -s -O ${MANIFESTS}/${SCRIPTS_PATH}/rm-ansible-group.sh && \
+  curl -s -O ${MANIFESTS}/${SCRIPTS_PATH}/check-docker.sh && \
   chmod +x *.sh && \
   cd -
 # 2 sed
