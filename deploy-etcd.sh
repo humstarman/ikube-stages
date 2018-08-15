@@ -15,10 +15,13 @@ source ./version
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - download etcd ... "
 # etcd-v3.3.2-linux-amd64.tar.gz
 URL=https://github.com/coreos/etcd/releases/download/$ETCD_VER
-if [ ! -f etcd-$ETCD_VER-linux-amd64.tar.gz ]; then
+FILE=/tmp/etcd-$ETCD_VER-linux-amd64.tar.gz
+if [ ! -f "$FILE" ]; then
   while true; do
     wget $URL/etcd-$ETCD_VER-linux-amd64.tar.gz && break
   done
+else
+  yes | cp $FILE ./ 
 fi
 if [[ ! -x "$(command -v etcd)" || ! -x "$(command -v etcdctl)" ]]; then
   while true; do
