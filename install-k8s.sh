@@ -15,10 +15,13 @@ source ./version
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - download kubernetes ... "
 #https://dl.k8s.io/v1.11.0/kubernetes-node-linux-amd64.tar.gz
 URL=https://dl.k8s.io/$KUBE_VER
-if [ ! -f ./kubernetes-server-linux-amd64.tar.gz ]; then
+FILE=/tmp/kubernetes-server-linux-amd64.tar.gz
+if [ ! -f $FILE ]; then
   while true; do
     wget $URL/kubernetes-server-linux-amd64.tar.gz && break
   done
+else
+  cp $FILE ./
 fi
 if [[ ! -x "$(command -v kubectl)" ]]; then
   while true; do
