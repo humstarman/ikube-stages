@@ -203,6 +203,7 @@ cat >> $FILE <<"EOF"
   --serialize-image-pulls=false \
   --logtostderr=true \
   --pod-manifest-path=/etc/kubernetes/manifests \
+  --feature-gates=RotateKubeletClientCertificate=true,RotateKubeletServerCertificate=true
   --v=2
 ExecStartPost=/sbin/iptables -A INPUT -s 10.0.0.0/8 -p tcp --dport 4194 -j ACCEPT
 ExecStartPost=/sbin/iptables -A INPUT -s 172.17.0.0/12 -p tcp --dport 4194 -j ACCEPT
