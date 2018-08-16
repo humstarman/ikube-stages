@@ -21,7 +21,7 @@ if [ ! -f $FILE ]; then
     wget $URL/kubernetes-server-linux-amd64.tar.gz && break
   done
 else
-  cp $FILE ./
+  yes | cp $FILE ./
 fi
 if [[ ! -x "$(command -v kubectl)" ]]; then
   while true; do
