@@ -14,7 +14,17 @@ YEAR=1
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - download CFSSL ... "
 source ./version
 URL=https://pkg.cfssl.org/$CFSSL_VER
-if [[ ! -f /tmp/cfssl || ! -f /tmp/cfssljson || ! -f /tmp/cfssl-certinfo ]]; then
+if [[ -f /tmp/cfssl && -f /tmp/cfssljson && -f /tmp/cfssl-certinfo ]]; then
+  echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - CFSSL already existed. "
+  yes | cp /tmp/cfssl /usr/local/bin/cfssl
+  yes | cp /tmp/cfssljson /usr/local/bin/cfssljson
+  yes | cp /tmp/cfssl-certinfo /usr/local/bin/cfssl-certinfo
+elif [[ -f ./cfssl && -f ./cfssljson && -f ./cfssl-certinfo ]]; then
+  echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - CFSSL already existed. "
+  yes | cp ./cfssl /usr/local/bin/cfssl
+  yes | cp ./cfssljson /usr/local/bin/cfssljson
+  yes | cp ./cfssl-certinfo /usr/local/bin/cfssl-certinfo
+else
   while true; do
     wget $URL/cfssl_linux-amd64
     chmod +x cfssl_linux-amd64
@@ -30,11 +40,6 @@ if [[ ! -f /tmp/cfssl || ! -f /tmp/cfssljson || ! -f /tmp/cfssl-certinfo ]]; the
       break
     fi
   done
-else
-  echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - CFSSL already existed. "
-  yes | cp /tmp/cfssl /usr/local/bin/cfssl
-  yes | cp /tmp/cfssljson /usr/local/bin/cfssljson
-  yes | cp /tmp/cfssl-certinfo /usr/local/bin/cfssl-certinfo
 fi
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - generate CA pem ... "
 # 2 generate template

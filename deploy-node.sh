@@ -31,13 +31,14 @@ getScript $SCRIPTS docker-config.sh
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - download docker ... "
 source ./version
 URL=https://download.docker.com/linux/static/stable/x86_64
-FILE=/tmp/docker-${DOCKER_VER}-ce.tgz
-if [ ! -f $FILE ]; then
+FILE=docker-${DOCKER_VER}-ce.tgz
+if [ -f "/tmp/$FILE" ]; then
+  yes | cp $FILE ./
+fi
+if [ ! -f "./$FILE" ]; then
   while true; do
     wget $URL/docker-${DOCKER_VER}-ce.tgz && break
   done
-else
-  yes | cp $FILE ./
 fi
 if [[ ! -x "$(command -v docker)" ]]; then
   while true; do
