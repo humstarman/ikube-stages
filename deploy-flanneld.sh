@@ -26,7 +26,7 @@ echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - download flannel ... "
 URL=https://github.com/coreos/flannel/releases/download/$FLANNEL_VER
 FILE=flannel-$FLANNEL_VER-linux-amd64.tar.gz
 if [ -f "/tmp/$FILE" ]; then
-  yes | cp $FILE ./
+  yes | cp /tmp/${FILE} ./
 fi
 if [ ! -f "./$FILE" ]; then
   while true; do

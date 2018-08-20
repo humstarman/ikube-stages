@@ -17,7 +17,7 @@ echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - download etcd ... "
 URL=https://github.com/coreos/etcd/releases/download/$ETCD_VER
 FILE=etcd-$ETCD_VER-linux-amd64.tar.gz
 if [ -f "/tmp/$FILE" ]; then
-  yes | cp $FILE ./ 
+  yes | cp /tmp/${FILE} ./ 
 fi
 if [ ! -f "./$FILE" ]; then
   while true; do

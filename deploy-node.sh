@@ -33,7 +33,7 @@ source ./version
 URL=https://download.docker.com/linux/static/stable/x86_64
 FILE=docker-${DOCKER_VER}-ce.tgz
 if [ -f "/tmp/$FILE" ]; then
-  yes | cp $FILE ./
+  yes | cp /tmp/${FILE} ./
 fi
 if [ ! -f "./$FILE" ]; then
   while true; do
