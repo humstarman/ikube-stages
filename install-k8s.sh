@@ -16,7 +16,7 @@ echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - download kubernetes ... "
 #https://dl.k8s.io/v1.11.0/kubernetes-node-linux-amd64.tar.gz
 URL=https://dl.k8s.io/$KUBE_VER
 FILE=kubernetes-server-linux-amd64.tar.gz
-if [ "/tmp/$FILE" ]; then
+if [ -f "/tmp/$FILE" ]; then
   yes | cp $FILE ./
 fi
 if [ ! -f "./$FILE" ]; then
