@@ -20,6 +20,7 @@ else
   exit 1
 fi
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - deploying HA, implemented by Haproxy and Keepalived ..."
+MASTERS="$(cat ./${MASTER_GROUP}.csv | tr ',' ' ')"
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - masters: $(echo $MASTERS)"
 CHK=${CHK:-"chk.sh"}
 VPORT=$KUBE_APISERVER
