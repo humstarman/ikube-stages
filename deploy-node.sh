@@ -44,7 +44,7 @@ if [[ ! -x "$(command -v docker)" ]]; then
   while true; do
     tar -zxvf docker-${DOCKER_VER}-ce.tgz 
     echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute docker ... "
-    ansible ${ANSIBLE_GROUP} -m copy -a "src=./docker/ dest=/usr/local/bin mode='a+x'"
+    ansible ${NODE_GROUP} -m copy -a "src=./docker/ dest=/usr/local/bin mode='a+x'"
     if [[ -x "$(command -v docker)" ]]; then
       echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - docker $DOCKER_VER installed."
       break
@@ -54,7 +54,7 @@ else
   echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - docker already existed. "
 fi
 # 2 config docker
-ansible ${ANSIBLE_GROUP} -m script -a "./docker-config.sh -d /var/lib/docker"
+ansible ${NODE_GROUP} -m script -a "./docker-config.sh -d /var/lib/docker"
 # 3 deploy docker
 mkdir -p ./systemd-unit
 FILE=./systemd-unit/docker.service
@@ -107,11 +107,11 @@ WantedBy=multi-user.target
 EOF
 FILE=${FILE##*/}
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute $FILE ... "
-ansible ${ANSIBLE_GROUP} -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
+ansible ${NODE_GROUP} -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - start $FILE ... "
-ansible ${ANSIBLE_GROUP} -m shell -a "systemctl daemon-reload"
-ansible ${ANSIBLE_GROUP} -m shell -a "systemctl enable $FILE"
-ansible ${ANSIBLE_GROUP} -m shell -a "systemctl restart $FILE"
+ansible ${NODE_GROUP} -m shell -a "systemctl daemon-reload"
+ansible ${NODE_GROUP} -m shell -a "systemctl enable $FILE"
+ansible ${NODE_GROUP} -m shell -a "systemctl restart $FILE"
 ## check config
 TARGET='10.0.0.0/8'
 while true; do
@@ -119,8 +119,8 @@ while true; do
     break
   else
     sleep 1
-    ansible ${ANSIBLE_GROUP} -m shell -a "systemctl daemon-reload"
-    ansible ${ANSIBLE_GROUP} -m shell -a "systemctl restart $FILE"
+    ansible ${NODE_GROUP} -m shell -a "systemctl daemon-reload"
+    ansible ${NODE_GROUP} -m shell -a "systemctl restart $FILE"
   fi
 done
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - docker $DOCKER_VER deployed."
@@ -164,7 +164,7 @@ kubectl config set-context default \\
 kubectl config use-context default --kubeconfig=bootstrap.kubeconfig
 yes | mv bootstrap.kubeconfig /etc/kubernetes/
 EOF
-ansible ${ANSIBLE_GROUP} -m script -a ./$FILE
+ansible ${NODE_GROUP} -m script -a ./$FILE
 ##  generate kubelet systemd unit
 mkdir -p ./systemd-unit
 FILE=./systemd-unit/kubelet.service
@@ -218,17 +218,17 @@ WantedBy=multi-user.target
 EOF
 FILE=${FILE##*/}
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute $FILE ... "
-ansible ${ANSIBLE_GROUP} -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
+ansible ${NODE_GROUP} -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - start $FILE ... "
-ansible ${ANSIBLE_GROUP} -m shell -a "systemctl daemon-reload"
-ansible ${ANSIBLE_GROUP} -m shell -a "systemctl enable $FILE"
-ansible ${ANSIBLE_GROUP} -m shell -a "systemctl restart $FILE"
+ansible ${NODE_GROUP} -m shell -a "systemctl daemon-reload"
+ansible ${NODE_GROUP} -m shell -a "systemctl enable $FILE"
+ansible ${NODE_GROUP} -m shell -a "systemctl restart $FILE"
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - $FILE deployed."
 # 5 deploy kube-proxy 
 ## prepare for ipvs
 if [[ "ipvs" == "${PROXY}" ]]; then
   getScript $SCRIPTS config-ipvs.sh
-  ansible ${ANSIBLE_GROUP} -m script -a "./config-ipvs.sh"
+  ansible ${NODE_GROUP} -m script -a "./config-ipvs.sh"
 fi
 ## generate kube-proxy pem
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - generate kube-proxy pem ... "
@@ -261,7 +261,7 @@ cd $SSL_DIR && \
   -profile=kubernetes  kube-proxy-csr.json | cfssljson -bare kube-proxy && \
   cd -
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute kube-proxy pem ... "
-ansible ${ANSIBLE_GROUP} -m copy -a "src=${SSL_DIR}/ dest=/etc/kubernetes/ssl"
+ansible ${NODE_GROUP} -m copy -a "src=${SSL_DIR}/ dest=/etc/kubernetes/ssl"
 ## generate kube-proxy bootstrapping kubeconfig
 FILE=mk-kube-proxy-kubeconfig.sh
 cat > $FILE << EOF
@@ -297,7 +297,7 @@ kubectl config set-context default \\
 kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
 yes | mv kube-proxy.kubeconfig /etc/kubernetes/
 EOF
-ansible ${ANSIBLE_GROUP} -m script -a ./$FILE
+ansible ${NODE_GROUP} -m script -a ./$FILE
 ##  generate kube-proxy systemd unit
 mkdir -p ./systemd-unit
 FILE=./systemd-unit/kube-proxy.service
@@ -342,9 +342,9 @@ WantedBy=multi-user.target
 EOF
 FILE=${FILE##*/}
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute $FILE ... "
-ansible ${ANSIBLE_GROUP} -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
+ansible ${NODE_GROUP} -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - start $FILE ... "
-ansible ${ANSIBLE_GROUP} -m shell -a "systemctl daemon-reload"
-ansible ${ANSIBLE_GROUP} -m shell -a "systemctl enable $FILE"
-ansible ${ANSIBLE_GROUP} -m shell -a "systemctl restart $FILE"
+ansible ${NODE_GROUP} -m shell -a "systemctl daemon-reload"
+ansible ${NODE_GROUP} -m shell -a "systemctl enable $FILE"
+ansible ${NODE_GROUP} -m shell -a "systemctl restart $FILE"
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - $FILE deployed."
