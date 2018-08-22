@@ -10,7 +10,15 @@
     done
   fi
 };:
-MASTERS="$(cat ./${MASTER_GROUP}.csv | tr ',' ' ')"
+FILE=info.env
+if [ -f ./$FILE ]; then
+  source ./$FILE
+else
+  echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [ERROR] - no environment file found!" 
+  echo " - exit!"
+  sleep 3
+  exit 1
+fi
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - deploying HA, implemented by Haproxy and Keepalived ..."
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - masters: $(echo $MASTERS)"
 CHK=${CHK:-"chk.sh"}
