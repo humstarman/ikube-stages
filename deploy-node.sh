@@ -44,7 +44,7 @@ if [[ ! -x "$(command -v docker)" ]]; then
   while true; do
     tar -zxvf docker-${DOCKER_VER}-ce.tgz 
     echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute docker ... "
-    ansible ${NODE_GROUP} -m copy -a "src=./docker/ dest=/usr/local/bin mode='a+x'"
+    ansible ${ANSIBLE_GROUP} -m copy -a "src=./docker/ dest=/usr/local/bin mode='a+x'"
     if [[ -x "$(command -v docker)" ]]; then
       echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - docker $DOCKER_VER installed."
       break
@@ -54,7 +54,7 @@ else
   echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - docker already existed. "
 fi
 # 2 config docker
-ansible ${NODE_GROUP} -m script -a "./docker-config.sh -d /var/lib/docker"
+ansible ${ANSIBLE_GROUP} -m script -a "./docker-config.sh -d /var/lib/docker"
 # 3 deploy docker
 mkdir -p ./systemd-unit
 FILE=./systemd-unit/docker.service
@@ -107,11 +107,11 @@ WantedBy=multi-user.target
 EOF
 FILE=${FILE##*/}
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute $FILE ... "
-ansible ${NODE_GROUP} -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
+ansible ${ANSIBLE_GROUP} -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - start $FILE ... "
-ansible ${NODE_GROUP} -m shell -a "systemctl daemon-reload"
-ansible ${NODE_GROUP} -m shell -a "systemctl enable $FILE"
-ansible ${NODE_GROUP} -m shell -a "systemctl restart $FILE"
+ansible ${ANSIBLE_GROUP} -m shell -a "systemctl daemon-reload"
+ansible ${ANSIBLE_GROUP} -m shell -a "systemctl enable $FILE"
+ansible ${ANSIBLE_GROUP} -m shell -a "systemctl restart $FILE"
 ## check config
 TARGET='10.0.0.0/8'
 while true; do
@@ -119,8 +119,8 @@ while true; do
     break
   else
     sleep 1
-    ansible ${NODE_GROUP} -m shell -a "systemctl daemon-reload"
-    ansible ${NODE_GROUP} -m shell -a "systemctl restart $FILE"
+    ansible ${ANSIBLE_GROUP} -m shell -a "systemctl daemon-reload"
+    ansible ${ANSIBLE_GROUP} -m shell -a "systemctl restart $FILE"
   fi
 done
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - docker $DOCKER_VER deployed."
