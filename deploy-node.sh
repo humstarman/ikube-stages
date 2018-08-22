@@ -164,7 +164,7 @@ kubectl config set-context default \\
 kubectl config use-context default --kubeconfig=bootstrap.kubeconfig
 yes | mv bootstrap.kubeconfig /etc/kubernetes/
 EOF
-ansible ${NODE_GROUP} -m script -a ./$FILE
+ansible ${ANSIBLE_GROUP} -m script -a ./$FILE
 ##  generate kubelet systemd unit
 mkdir -p ./systemd-unit
 FILE=./systemd-unit/kubelet.service
@@ -218,9 +218,9 @@ WantedBy=multi-user.target
 EOF
 FILE=${FILE##*/}
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute $FILE ... "
-ansible ${NODE_GROUP} -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
+ansible ${ANSIBLE_GROUP} -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - start $FILE ... "
-ansible ${NODE_GROUP} -m shell -a "systemctl daemon-reload"
+ansible ${ANSIBLE_GROUP} -m shell -a "systemctl daemon-reload"
 ansible ${NODE_GROUP} -m shell -a "systemctl enable $FILE"
 ansible ${NODE_GROUP} -m shell -a "systemctl restart $FILE"
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - $FILE deployed."
@@ -228,7 +228,7 @@ echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - $FILE deployed."
 ## prepare for ipvs
 if [[ "ipvs" == "${PROXY}" ]]; then
   getScript $SCRIPTS config-ipvs.sh
-  ansible ${NODE_GROUP} -m script -a "./config-ipvs.sh"
+  ansible ${ANSIBLE_GROUP} -m script -a "./config-ipvs.sh"
 fi
 ## generate kube-proxy pem
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - generate kube-proxy pem ... "
@@ -261,7 +261,7 @@ cd $SSL_DIR && \
   -profile=kubernetes  kube-proxy-csr.json | cfssljson -bare kube-proxy && \
   cd -
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute kube-proxy pem ... "
-ansible ${NODE_GROUP} -m copy -a "src=${SSL_DIR}/ dest=/etc/kubernetes/ssl"
+ansible ${ANSIBLE_GROUP} -m copy -a "src=${SSL_DIR}/ dest=/etc/kubernetes/ssl"
 ## generate kube-proxy bootstrapping kubeconfig
 FILE=mk-kube-proxy-kubeconfig.sh
 cat > $FILE << EOF
@@ -297,7 +297,7 @@ kubectl config set-context default \\
 kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
 yes | mv kube-proxy.kubeconfig /etc/kubernetes/
 EOF
-ansible ${NODE_GROUP} -m script -a ./$FILE
+ansible ${ANSIBLE_GROUP} -m script -a ./$FILE
 ##  generate kube-proxy systemd unit
 mkdir -p ./systemd-unit
 FILE=./systemd-unit/kube-proxy.service
@@ -342,9 +342,9 @@ WantedBy=multi-user.target
 EOF
 FILE=${FILE##*/}
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute $FILE ... "
-ansible ${NODE_GROUP} -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
+ansible ${ANSIBLE_GROUP} -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - start $FILE ... "
-ansible ${NODE_GROUP} -m shell -a "systemctl daemon-reload"
+ansible ${ANSIBLE_GROUP} -m shell -a "systemctl daemon-reload"
 ansible ${NODE_GROUP} -m shell -a "systemctl enable $FILE"
 ansible ${NODE_GROUP} -m shell -a "systemctl restart $FILE"
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - $FILE deployed."
