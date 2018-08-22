@@ -28,7 +28,7 @@ if [[ "vip" == "${HA}" ]]; then
     "$VIP",
 EOF
 fi
-MASTER=$(cat ./master.csv | tr "," " ")
+MASTER=$(cat ./${MASTER_GROUP}.csv | tr "," " ")
 #echo $MASTER
 for ip in $MASTER; do
   cat >> $FILE << EOF
@@ -66,10 +66,10 @@ cd ./ssl/kubernetes && \
   cd -
 # 2 distribute kubernetes pem
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute kubernetes pem ... "
-ansible master -m copy -a "src=./ssl/kubernetes/ dest=/etc/kubernetes/ssl"
+ansible ${MASTER_GROUP} -m copy -a "src=./ssl/kubernetes/ dest=/etc/kubernetes/ssl"
 # 3 pepaare ennviorment variable about the number of masters
 N2SET=3
-MASTER=$(cat ./master.csv | tr "," " ")
+MASTER=$(cat ./${MASTER_GROUP}.csv | tr "," " ")
 N_MASTER=$(echo $MASTER | wc -w)
 if [[ "$N_MASTER" > "$N2SET" ]]; then
   if [[ "$[${N_MASTER}%2]" == "1" ]]; then
@@ -129,11 +129,11 @@ WantedBy=multi-user.target
 EOF
 FILE=${FILE##*/}
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute $FILE ... "
-ansible master -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
+ansible ${MASTER_GROUP} -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - start $FILE ... "
-ansible master -m shell -a "systemctl daemon-reload"
-ansible master -m shell -a "systemctl enable $FILE"
-ansible master -m shell -a "systemctl restart $FILE"
+ansible ${MASTER_GROUP} -m shell -a "systemctl daemon-reload"
+ansible ${MASTER_GROUP} -m shell -a "systemctl enable $FILE"
+ansible ${MASTER_GROUP} -m shell -a "systemctl restart $FILE"
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - $FILE deployed."
 # 5 deploy kube-controller-manager
 mkdir -p ./systemd-unit
@@ -166,11 +166,11 @@ WantedBy=multi-user.target
 EOF
 FILE=${FILE##*/}
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute $FILE ... "
-ansible master -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
+ansible ${MASTER_GROUP} -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - start $FILE ... "
-ansible master -m shell -a "systemctl daemon-reload"
-ansible master -m shell -a "systemctl enable $FILE"
-ansible master -m shell -a "systemctl restart $FILE"
+ansible ${MASTER_GROUP} -m shell -a "systemctl daemon-reload"
+ansible ${MASTER_GROUP} -m shell -a "systemctl enable $FILE"
+ansible ${MASTER_GROUP} -m shell -a "systemctl restart $FILE"
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - $FILE deployed."
 # 6 deploy kube-scheduler
 mkdir -p ./systemd-unit
@@ -195,10 +195,10 @@ WantedBy=multi-user.target
 EOF
 FILE=${FILE##*/}
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute $FILE ... "
-ansible master -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
+ansible ${MASTER_GROUP} -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - start $FILE ... "
-ansible master -m shell -a "systemctl daemon-reload"
-ansible master -m shell -a "systemctl enable $FILE"
-ansible master -m shell -a "systemctl restart $FILE"
+ansible ${MASTER_GROUP} -m shell -a "systemctl daemon-reload"
+ansible ${MASTER_GROUP} -m shell -a "systemctl enable $FILE"
+ansible ${MASTER_GROUP} -m shell -a "systemctl restart $FILE"
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - $FILE deployed."
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - master deployed."
