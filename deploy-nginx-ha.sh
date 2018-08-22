@@ -21,7 +21,7 @@ else
   exit 1
 fi
 # 1 deply HA based on nginx
-if $NODE_EXISTENCE; then
+if ${ONLYNODE_EXISTENCE}; then
   ## generate nginx.conf
   MASTER=$(sed s/","/" "/g ./master.csv)
   DOCKER=$(which docker)
@@ -57,8 +57,8 @@ EOF
     }
 }
 EOF
-  ansible node -m shell -a "[ -d "$NGINX_CONF_DIR" ] || mkdir -p "$NGINX_CONF_DIR""
-  ansible node -m copy -a "src=$FILE dest=$NGINX_CONF_DIR"
+  ansible ${ONLY_GROUP} -m shell -a "[ -d "$NGINX_CONF_DIR" ] || mkdir -p "$NGINX_CONF_DIR""
+  ansible ${ONLY_GROUP} -m copy -a "src=$FILE dest=$NGINX_CONF_DIR"
   ## generate nginx-proxy.service
   mkdir -p ./systemd-unit
   FILE=./systemd-unit/nginx-proxy.service
@@ -89,10 +89,10 @@ WantedBy=multi-user.target
 EOF
   FILE=${FILE##*/}
   echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute $FILE ... "
-  ansible node -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
+  ansible ${ONLY_GROUP} -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
   echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - start $FILE ... "
-  ansible node -m shell -a "systemctl daemon-reload"
-  ansible node -m shell -a "systemctl enable $FILE"
-  ansible node -m shell -a "systemctl restart $FILE"
+  ansible ${ONLY_GROUP} -m shell -a "systemctl daemon-reload"
+  ansible ${ONLY_GROUP} -m shell -a "systemctl enable $FILE"
+  ansible ${ONLY_GROUP} -m shell -a "systemctl restart $FILE"
   echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - HA nodes deployed."  
 fi
