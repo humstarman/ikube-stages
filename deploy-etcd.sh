@@ -32,7 +32,7 @@ if [[ ! -x "$(command -v etcd)" || ! -x "$(command -v etcdctl)" ]]; then
     mv ./etcd-$ETCD_VER-linux-amd64/etcd ./etcd-$ETCD_VER-linux-amd64/bin
     mv ./etcd-$ETCD_VER-linux-amd64/etcdctl ./etcd-$ETCD_VER-linux-amd64/bin
     echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute etcd ... "
-    ansible master -m copy -a "src=./etcd-$ETCD_VER-linux-amd64/bin/ dest=/usr/local/bin mode='a+x'"
+    ansible ${MASTER_GROUP} -m copy -a "src=./etcd-$ETCD_VER-linux-amd64/bin/ dest=/usr/local/bin mode='a+x'"
     if [[ -x "$(command -v etcd)" && -x "$(command -v etcdctl)" ]]; then
       echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - etcd installed."
       break
@@ -134,9 +134,9 @@ WantedBy=multi-user.target
 EOF
 FILE=${FILE##*/}
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute $FILE ... "
-ansible master -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
+ansible ${MASTER_GROUP} -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - start $FILE ... "
-ansible master -m shell -a "systemctl daemon-reload"
-ansible master -m shell -a "systemctl enable $FILE"
-ansible master -m shell -a "systemctl restart $FILE"
+ansible ${MASTER_GROUP} -m shell -a "systemctl daemon-reload"
+ansible ${MASTER_GROUP} -m shell -a "systemctl enable $FILE"
+ansible ${MASTER_GROUP} -m shell -a "systemctl restart $FILE"
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - etcd $ETCD_VER deployed."
