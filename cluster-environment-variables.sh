@@ -17,7 +17,7 @@ function getScript(){
 getScript $SCRIPTS deal-env.sh
 getScript $SCRIPTS mk-env-conf.sh
 getScript $SCRIPTS put-this-ip.sh
-NET_ID=$(cat ./master.csv)
+NET_ID=$(cat ./${MASTER_GROUP}.csv)
 NET_ID=${NET_ID%%,*}
 NET_ID=${NET_ID%.*}
 BOOTSTRAP_TOKEN=$(head -c 16 /dev/urandom | od -An -t x | tr -d ' ')
@@ -43,9 +43,9 @@ EOF
 ansible ${ANSIBLE_GROUP} -m copy -a "src=/tmp/token.csv dest=/etc/kubernetes"
 # ip
 VIP=${VIP:-"none"}
-ansible master -m script -a "./put-this-ip.sh -n $NET_ID -r master -a $HA -v $VIP"
-if $NODE_EXISTENCE; then
-  ansible node -m script -a "./put-this-ip.sh -n $NET_ID -r node -a $HA -v $VIP"
+ansible ${MASTER_GROUP} -m script -a "./put-this-ip.sh -n $NET_ID -r master -a $HA -v $VIP"
+if ${ONLY_NODE_EXISTENCE}; then
+  ansible ${ONLY_GROUP} -m script -a "./put-this-ip.sh -n $NET_ID -r node -a $HA -v $VIP"
 fi
 # etcd
 NAME=etcd
