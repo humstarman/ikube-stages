@@ -82,7 +82,7 @@ export ETCD_ENDPOINTS=$ETCD_ENDPOINTS
 EOF
   ansible $IP -m copy -a "src=$FILE dest=/var/env/etcd.env"
 done
-if $NODE_EXISTENCE; then
+if ${ONLY_NODE_EXISTENCE}; then
   FILE="/tmp/etcd.env"
   [ -e $FILE ] && rm -f $FILE
   [ -e $FILE ] || touch $FILE
@@ -90,7 +90,7 @@ if $NODE_EXISTENCE; then
 export ETCD_NODES=$ETCD_NODES
 export ETCD_ENDPOINTS=$ETCD_ENDPOINTS
 EOF
-  ansible node -m copy -a "src=$FILE dest=/var/env/etcd.env"
+  ansible ${ONLY_GROUP} copy -a "src=$FILE dest=/var/env/etcd.env"
 fi
 ansible ${ANSIBLE_GROUP} -m script -a ./mk-env-conf.sh
 cat > ./write-to-etc_profile <<"EOF"
