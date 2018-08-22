@@ -36,7 +36,7 @@ if [[ ! -x "$(command -v kubectl)" ]]; then
       mv kube-scheduler $BIN && \
       cd -
     echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute Kubernetes master components ... "
-    ansible master -m copy -a "src=./kubernetes/server/bin/$BIN/ dest=/usr/local/bin mode='a+x'"
+    ansible ${MASTER_GROUP} -m copy -a "src=./kubernetes/server/bin/$BIN/ dest=/usr/local/bin mode='a+x'"
     # node
     BIN=kube-node-bin
     mkdir -p kubernetes/server/bin/$BIN
