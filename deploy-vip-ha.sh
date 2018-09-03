@@ -136,6 +136,7 @@ for MASTER in $MASTERS; do
 EOF
   i=$[i+1]
 done
+if false; then
 cat >> $FILE <<EOF
 
 frontend k8s-http-api
@@ -158,6 +159,7 @@ for MASTER in $MASTERS; do
 EOF
   i=$[i+1]
 done
+fi
 ansible ${MASTER_GROUP} -m copy -a "src=$FILE dest=/etc/haproxy"
 # keepalived.conf
 FILE=/tmp/keepalived.conf
