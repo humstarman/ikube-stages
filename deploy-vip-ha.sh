@@ -104,30 +104,25 @@ ansible ${MASTER_GROUP} -m shell -a "systemctl restart ${SVC}"
 # haproxy.cfg
 FILE=/tmp/haproxy.cfg
 cat > $FILE <<EOF
-listen stats
-  bind    *:9000
-  mode    http
-  stats   enable
-  stats   hide-version
-  stats   uri       /stats
-  stats   refresh   30s
-  stats   realm     Haproxy\ Statistics
-  stats   auth      haproxy:haproxy
+global
+        log /dev/log    local0
+        log /dev/log    local1 notice
+        chroot /var/lib/haproxy
+        stats timeout 30s
+        daemon
+        nbproc 1
 
-frontend k8s-api
-    bind 0.0.0.0:${VPORT}
-    mode tcp
-    option tcplog
-    tcp-request inspect-delay 5s
-    tcp-request content accept if { req.ssl_hello_type 1 }
-    default_backend k8s-api
+defaults
+        log     global
+        timeout connect 5000
+        timeout client  50000
+        timeout server  50000
 
-backend k8s-api
-    mode tcp
-    option tcplog
-    option tcp-check
-    balance roundrobin
-    default-server inter 10s downinter 5s rise 2 fall 2 slowstart 60s maxconn 250 maxqueue 256 weight 100
+listen kube-master
+    	bind 0.0.0.0:${VPORT}
+        mode tcp
+        option tcplog
+        balance roundrobin
 EOF
 i=1
 for MASTER in $MASTERS; do
