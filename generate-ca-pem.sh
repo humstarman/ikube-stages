@@ -9,7 +9,7 @@ else
   sleep 3
   exit 1 
 fi
-YEAR=10
+YEAR=3
 # 1 download and install CFSSL
 echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - download CFSSL ... "
 source ./version
