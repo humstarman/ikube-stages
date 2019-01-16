@@ -11,10 +11,13 @@ set -e
     done
   fi
 };:
+info() {
+    echo $(date) - [INFO] - "$*"
+}
 FILE=info.env
 source ./${FILE}
 # 1 generate kubernetes pem
-echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - generate kubernetes pem ... "
+info generate kubernetes pem ...
 mkdir -p ./ssl/kubernetes
 FILE=./ssl/kubernetes/kubernetes-csr.json
 cat > $FILE << EOF
@@ -65,7 +68,7 @@ cd ./ssl/kubernetes && \
   -profile=kubernetes kubernetes-csr.json | cfssljson -bare kubernetes
   cd -
 # 2 distribute kubernetes pem
-echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute kubernetes pem ... "
+info distribute kubernetes pem ...
 ansible ${MASTER_GROUP} -m copy -a "src=./ssl/kubernetes/ dest=/etc/kubernetes/ssl"
 # 3 pepaare ennviorment variable about the number of masters
 N2SET=3
@@ -90,12 +93,13 @@ After=network.target
 [Service]
 EnvironmentFile=-/var/env/env.conf
 ExecStart=/usr/local/bin/kube-apiserver \\
-  --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota \\
+  --anonymous-auth=false \\
+  --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota \\
   --advertise-address=\${NODE_IP} \\
   --bind-address=0.0.0.0 \\
   --insecure-bind-address=0.0.0.0 \\
   --authorization-mode=Node,RBAC \\
-  --runtime-config=api/all=rbac.authorization.kubernetes.io/v1 \\
+  --runtime-config=api/all=true \\
   --kubelet-https=true \\
   --enable-bootstrap-token-auth \\
   --token-auth-file=/etc/kubernetes/token.csv \\
@@ -128,13 +132,13 @@ LimitNOFILE=65536
 WantedBy=multi-user.target
 EOF
 FILE=${FILE##*/}
-echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute $FILE ... "
+info distribute $FILE ...
 ansible ${MASTER_GROUP} -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
-echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - start $FILE ... "
+info start $FILE ...
 ansible ${MASTER_GROUP} -m shell -a "systemctl daemon-reload"
 ansible ${MASTER_GROUP} -m shell -a "systemctl enable $FILE"
 ansible ${MASTER_GROUP} -m shell -a "systemctl restart $FILE"
-echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - $FILE deployed."
+info $FILE deployed
 # 5 deploy kube-controller-manager
 mkdir -p ./systemd-unit
 FILE=./systemd-unit/kube-controller-manager.service
@@ -146,6 +150,8 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 [Service]
 EnvironmentFile=-/var/env/env.conf
 ExecStart=/usr/local/bin/kube-controller-manager \
+  --use-service-account-credentials=true \
+  --controllers=*,bootstrapsigner,tokencleaner \
   --address=127.0.0.1 \
   --master=http://${NODE_IP}:8080 \
   --allocate-node-cidrs=true \
@@ -165,13 +171,13 @@ RestartSec=5
 WantedBy=multi-user.target
 EOF
 FILE=${FILE##*/}
-echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute $FILE ... "
+info distribute $FILE ...
 ansible ${MASTER_GROUP} -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
-echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - start $FILE ... "
+info start $FILE ...
 ansible ${MASTER_GROUP} -m shell -a "systemctl daemon-reload"
 ansible ${MASTER_GROUP} -m shell -a "systemctl enable $FILE"
 ansible ${MASTER_GROUP} -m shell -a "systemctl restart $FILE"
-echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - $FILE deployed."
+info $FILE deployed.
 # 6 deploy kube-scheduler
 mkdir -p ./systemd-unit
 FILE=./systemd-unit/kube-scheduler.service
@@ -194,11 +200,11 @@ RestartSec=5
 WantedBy=multi-user.target
 EOF
 FILE=${FILE##*/}
-echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - distribute $FILE ... "
+info distribute $FILE ...
 ansible ${MASTER_GROUP} -m copy -a "src=./systemd-unit/$FILE dest=/etc/systemd/system"
-echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - start $FILE ... "
+info start $FILE ...
 ansible ${MASTER_GROUP} -m shell -a "systemctl daemon-reload"
 ansible ${MASTER_GROUP} -m shell -a "systemctl enable $FILE"
 ansible ${MASTER_GROUP} -m shell -a "systemctl restart $FILE"
-echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - $FILE deployed."
-echo "$(date -d today +'%Y-%m-%d %H:%M:%S') - [INFO] - master deployed."
+info $FILE deployed
+info master deployed
